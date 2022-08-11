@@ -91,15 +91,10 @@
     }
 }
 
-const mouse_on =  {
-          type: jsPsychCallFunction,
-          func: function() {
-          document.body.style.cursor= "auto";
-            }
-        },
+
 // conditional timeline - determines if a subjective rating is required or not (it is required on every 3rd trial in the test phase)
 const if_node = {
-          timeline: [mouse_on, subjective_rating],
+          timeline: [subjective_rating],
           conditional_function: function () {
               if (jsPsych.data.get().select('test').values.length % 3 == 0) {  // ask a subjective rating question every 3rd trial
                   subjective_q_id = jsPsych.randomization.sampleWithoutReplacement([0, 1], 1);
@@ -215,7 +210,7 @@ const training_timeline = {
 
         training_feedback
       ],
-      repetitions: 2 
+      repetitions: 4 
       
     };
 
@@ -315,6 +310,12 @@ const test_timeline = {
               last_change = "up";
             }
             staircase_value = Math.max(Math.min(1, staircase_value), 0); // bound values to 0-1
+          }
+        },
+         {
+          type: jsPsychCallFunction,
+          func: function() {
+              document.body.style.cursor= "auto";
           }
         },
         if_node,
