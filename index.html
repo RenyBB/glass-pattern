@@ -112,7 +112,7 @@ const training_feedback = {
     // the stimulus should be 'correct' or 'incorrect'.
     // Instead, this function will check the accuracy of the last response and use that information to set
     // the stimulus value on each trial.
-    let last_trial_correct = jsPsych.data.get().last(1).values()[0].correct;
+    let last_trial_correct = jsPsych.data.get().select('correct').values[jsPsych.data.get().select('correct').values.length - 1];
     if(last_trial_correct){
       return "<p>Your response was correct!</p> <p> Press Space to continue </p>"; // the parameter value has to be returned from the function
     } else {
