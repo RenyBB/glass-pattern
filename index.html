@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+  <head> 
+    <script src="https://unpkg.com/jspsych"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-preload"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-instructions"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-button-response"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-image-keyboard-response"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-text"></script>
+    
+    <script src="https://unpkg.com/@jspsych/plugin-call-function"></script>
+    <script src="https://unpkg.com/mathjs@10.4.0/lib/browser/math.js"></script>
+    <script src="https://uat-perceptioncensus-assets.s3.eu-west-2.amazonaws.com/stimuli/glass_pattern/glass_pattern_stimulus_list.js" type="text/javascript"></script>
+    
+    <link rel="stylesheet" href="https://unpkg.com/jspsych@7.1.2/css/jspsych.css"/>
+    <style>
+      html,body {
+        background-color: #808080;
+        color: white;
+      }
+    </style>
+    
+  </head>
+  
+  <body></body>
+  <script>
+    
+    const  jsPsych = initJsPsych({
+    use_webaudio: false,
+    on_finish: function () {
+       jsPsych.data.displayData();
+    }
+  });
+    
+     // Setting parameters 
+     let stim_path = "https://uat-perceptioncensus-assets.s3.eu-west-2.amazonaws.com/stimuli/glass_pattern/";
+
+
+    let staircase_value = 0.5; 
+    let staircase_change = 0.02;
+    let circle = 1; // 1 or 2
+    let consecutive_correct_responses = 0;
+    let last_change = null;
+    let reversals = 0;
+    let n_reversals = 10; // max number of reversals
+    let training_staircase_value = 0.8;
+    let indeces_signal_stimuli = Array(100).fill().map((element, index) => index + 1);
+    let indeces_noise_stimuli = Array(300).fill().map((element, index) => index + 1);
+
+    let index_signal_image_trial = [];
+    let index_nosie_image_trial = [];
+
+
+
+    let all_images = [];
+        for (var i = 0; i< glass_pattern_stim.length; i++) {
+            all_images.push(stim_path.concat(glass_pattern_stim[i].image));
+        }; 
+   
+
+    const SubjectiveRatingQs = [
+        {
+           question: "How confident are you that correctly identified the non-circle in the last pair of shapes?",
+           sliderRange: [1, 4],
+           anchors: ["1. Guessed", "2. Somewhat confident", "3. Confident", "4. Completely confident"],
+        },
+        {
+            question: "How easy/difficult was it to identify the non-circle in the last pair of shapes?",
+            sliderRange: [1, 4],
+            anchors: ["1. Very difficult", "2. Somewhat difficult", "3. Somewhat easy", "4. Very easy"],
+            repeats: 3,
+        },
+    ];
+
+// define subjective rating question - appears only in testing phase
+    var subjective_q_id = [];
+    const subjective_rating = {
+    type: jsPsychSurveyLikert,
+    questions: [{
+        prompt: () => SubjectiveRatingQs[subjective_q_id].question,
+        labels: () => SubjectiveRatingQs[subjective_q_id].anchors,
+        name: () => SubjectiveRatingQs[subjective_q_id].id
+    }],
+    scale_width: 500,
+    button_label: "Continue",
+    on_start: function () {
+        console.log(subjective_q_id)
+    }
+}
+
+// conditional timeline - determines if a subjective rating is required or not (it is required on every 3rd trial in the test phase)
+const if_node = {
+          timeline: [subjective_rating],
+          conditional_function: function () {
+              if (jsPsych.data.get().select('test').values.length % 3 == 0) {  // ask a subjective rating question every 3rd trial
+                  subjective_q_id = jsPsych.randomization.sampleWithoutReplacement([0, 1], 1);
+                  return true; //ask subjective response question
+              } else {
+                  return false; // don't ask subjective response question
+              }
+          }
+      }
+
+
+// define feedback - apppears only in training phase
+const training_feedback = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: function(){
+    // The feedback stimulus is a dynamic parameter because we can't know in advance whether
+    // the stimulus should be 'correct' or 'incorrect'.
+    // Instead, this function will check the accuracy of the last response and use that information to set
+    // the stimulus value on each trial.
+    let last_trial_correct = jsPsych.data.get().last(1).values()[0].correct;
+    if(last_trial_correct){
+      return "<p>Your response was correct!</p> <p> Press Space to continue </p>"; // the parameter value has to be returned from the function
+    } else {
+      return "<p>Your response was not correct.</p> <p> Press Space to continue </p>"; // the parameter value has to be returned from the function
+    }
+  },
+  //trial_duration: 5000,
+  response_ends_trial: true,
+  choices: " "
+}
+
+const training_timeline = {
+      timeline: [
+        {
+        type: jsPsychCallFunction,
+        func: function() {
+        document.body.style.cursor= "none";
+          }
+        },
+        {
+          type: jsPsychImageKeyboardResponse,
+          stimulus: () => [stim_path+('cross.png')],
+          choices: "NO_KEYS",
+          trial_duration: 1000,
+          on_finish: () => {
+            // randomly determine whether the non circle is in the first or second trial
+            circle = jsPsych.randomization.randomInt(1, 2);
+            console.log(circle);
+            console.log(training_staircase_value);
+          },
+        },
+        {
+          type: jsPsychImageKeyboardResponse,
+          stimulus: [],
+          choices: "NO_KEYS",
+          trial_duration: 145,
+          on_start: function(trial) {
+            let prop_signal = circle == 1 ? training_staircase_value: 0;
+            if (prop_signal == 0) {
+              index_noise_image_trial = jsPsych.randomization.sampleWithReplacement(indeces_signal_stimuli, 1)[0]; 
+              trial.stimulus = [stim_path+('noise_image_no_')+(index_noise_image_trial.toString())+('.png')];
+            }
+            else {
+              prop_signal =  parseFloat(prop_signal.toFixed(2));
+              index_signal_image_trial = jsPsych.randomization.sampleWithReplacement(indeces_signal_stimuli, 1)[0]; 
+              trial.stimulus = [stim_path+('signal_')+(prop_signal.toString())+('_image_no_')+(index_signal_image_trial.toString())+('.png')];
+            };
+            console.log(prop_signal);
+            console.log(trial.stimulus);
+          },
+        },
+        {
+          type: jsPsychImageKeyboardResponse,
+          stimulus: () => [stim_path+('empty.png')],
+          choices: "NO_KEYS",
+          trial_duration: 500
+        },
+        {
+          type: jsPsychImageKeyboardResponse,
+          stimulus: [],
+          choices: "NO_KEYS",
+          trial_duration: 145,
+          on_start: function(trial) {
+            let prop_signal = circle == 2 ? training_staircase_value: 0;
+            if (prop_signal == 0) {
+              index_noise_image_trial = jsPsych.randomization.sampleWithReplacement(indeces_signal_stimuli, 1)[0]; 
+              trial.stimulus = [stim_path+('noise_image_no_')+(index_noise_image_trial.toString())+('.png')];
+            }
+            else {
+              prop_signal =  parseFloat(prop_signal.toFixed(2));
+              index_signal_image_trial = jsPsych.randomization.sampleWithReplacement(indeces_signal_stimuli, 1)[0]; 
+              trial.stimulus = [stim_path+('signal_')+(prop_signal.toString())+('_image_no_')+(index_signal_image_trial.toString())+('.png')];
+            };
+            console.log(prop_signal);
+            console.log(trial.stimulus);
+          },
+        },
+        {
+          type: jsPsychHtmlKeyboardResponse,
+          stimulus: "<p>Which image was the a circle?</p><p>Press 1 for the first and 2 for the second.</p>",
+          choices: ["1","2"],
+          on_finish: (data) => {
+            data.correct = data.response == circle;
+            console.log(data.correct);
+          }
+        },
+        {
+          type: jsPsychCallFunction,
+          func: function() {
+              document.body.style.cursor= "auto";
+          }
+        },
+
+        training_feedback
+      ],
+      repetitions: 2 
+      
+    };
+
+
+
+const test_timeline = {
+      timeline: [
+        {
+          type: jsPsychCallFunction,
+          func: function() {
+          document.body.style.cursor= "none";
+            }
+        },
+        {
+          type: jsPsychImageKeyboardResponse,
+          stimulus: () => [stim_path+('cross.png')],
+          choices: "NO_KEYS",
+          trial_duration: 1000,
+          on_finish: () => {
+            // randomly determine whether the non circle is in the first or second trial
+            circle = jsPsych.randomization.randomInt(1, 2);
+            console.log(circle);
+            console.log(staircase_value);
+          },
+        },
+        {
+          type: jsPsychImageKeyboardResponse,
+          stimulus: [],
+          choices: "NO_KEYS",
+          trial_duration: 145,
+          on_start: function(trial) {
+            let prop_signal = circle == 1 ? staircase_value: 0;
+            if (prop_signal == 0) {
+              index_noise_image_trial = jsPsych.randomization.sampleWithReplacement(indeces_signal_stimuli, 1)[0]; 
+              trial.stimulus = [stim_path+('noise_image_no_')+(index_noise_image_trial.toString())+('.png')];
+            }
+            else {
+              prop_signal =  parseFloat(prop_signal.toFixed(2));
+              index_signal_image_trial = jsPsych.randomization.sampleWithReplacement(indeces_signal_stimuli, 1)[0]; 
+              trial.stimulus = [stim_path+('signal_')+(prop_signal.toString())+('_image_no_')+(index_signal_image_trial.toString())+('.png')];
+            };
+            console.log(prop_signal);
+            console.log(trial.stimulus);
+          },
+        },
+        {
+          type: jsPsychImageKeyboardResponse,
+          stimulus: () => [stim_path+('empty.png')],
+          choices: "NO_KEYS",
+          trial_duration: 500
+        },
+        {
+          type: jsPsychImageKeyboardResponse,
+          stimulus: [],
+          choices: "NO_KEYS",
+          trial_duration: 145,
+          on_start: function(trial) {
+            let prop_signal = circle == 2 ? staircase_value: 0;
+            if (prop_signal == 0) {
+              index_noise_image_trial = jsPsych.randomization.sampleWithReplacement(indeces_signal_stimuli, 1)[0]; 
+              trial.stimulus = [stim_path+('noise_image_no_')+(index_noise_image_trial.toString())+('.png')];
+            }
+            else {
+              prop_signal =  parseFloat(prop_signal.toFixed(2));
+              index_signal_image_trial = jsPsych.randomization.sampleWithReplacement(indeces_signal_stimuli, 1)[0]; 
+              trial.stimulus = [stim_path+('signal_')+(prop_signal.toString())+('_image_no_')+(index_signal_image_trial.toString())+('.png')];
+            };
+            console.log(prop_signal);
+            console.log(trial.stimulus);
+          },
+        },
+        {
+          type: jsPsychHtmlKeyboardResponse,
+          stimulus: "<p>Which image was not a circle?</p><p>Press 1 for the first and 2 for the second.</p>",
+          choices: ["1","2"],
+          on_finish: (data) => {
+            data.test = 1;
+            data.correct = data.response == circle;
+            console.log(data.correct);
+
+            if(data.correct){
+              consecutive_correct_responses++;
+              if(consecutive_correct_responses == 3){
+                staircase_value -= staircase_change;
+                if(last_change == "up"){
+                  reversals++;
+                }
+                last_change = "down";
+                consecutive_correct_responses = 0;
+              }
+            } else {
+              consecutive_correct_responses = 0;
+              staircase_value += staircase_change;
+              if(last_change == "down"){
+                reversals++;
+              }
+              last_change = "up";
+            }
+            staircase_value = Math.max(Math.min(1, staircase_value), 0); // bound values to 0-1
+          }
+        },
+        {
+          type: jsPsychCallFunction,
+          func: function() {
+          document.body.style.cursor= "auto";
+            }
+        },
+        if_node,
+      ],
+      loop_function: () => {
+        return reversals < 10;
+      }
+    };
+
+
+   // preload stimuli
+   const preload = {
+            type: jsPsychPreload,
+            images: [all_images],
+            message: 'Please wait while the task loads. This may take a minute.',
+        };
+    
+
+
+    jsPsych.run([preload, training_timeline, test_timeline]);
+  </script>
+</html>
