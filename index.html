@@ -358,8 +358,32 @@ const test_timeline = {
         allow_backward: false,
         button_label_next: 'Continue'
     };
+    
+        // self_efficacy pre-task
+    const self_efficacy_pretask = {
+            type: jsPsychSurveyLikert,
+            questions: [{
+                prompt: '<p>Before you begin, how good do you think you will be at this task?<br><br>If you are not sure, just give you best guess.<br><br>It’s OK if you don’t think you’ll be very good at the task -  our expected ability doesn’t always match our actual ability.</p>',
+                labels: ["1. Not at all good", "2. Somewhat good", "3. Good", "4. Very good"]
+            }],
+            trial_duration: 20000,
+            scale_width: 700,
+            button_label: "Start task",
+        };
+
+    // self efficacy & task familiarity question
+    const self_efficacy_posttask = {
+            type: jsPsychSurveyLikert,
+            questions: [{
+                prompt: '<p>Thank you for completing this task!<br><br>How good do you think you were at the task?<br><br>It’s OK if you don’t think you were very good at the task. The number of dots arranged in a circle-like pattern was changing throughout the task, and the fewer dots follow the pattern, the harder the task is.</p>',
+                labels: ["1. Not good at all", "2. Somewhat good", "3. Good", "4. Very good"],//["1. Not good at all", "2. A little bit good", "3. Quite good", "4. Very good"]
+            }],
+            trial_duration: 20000,
+            scale_width: 700,
+            button_label: "Continue",
+        };
 
 
-    jsPsych.run([preload, TrainingInstructions, training_timeline, TestInstructions, test_timeline]);
+    jsPsych.run([preload, TrainingInstructions, training_timeline, TestInstructions, self_efficacy_pretask, test_timeline, self_efficacy_posttask]);
   </script>
 </html>
