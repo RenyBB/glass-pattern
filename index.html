@@ -52,8 +52,8 @@
     let index_signal_image_trial = [];
     let index_nosie_image_trial = [];
 
-    let consequitive_correct_responses_total = 0;
-    let consequitive_incorrect_responses_total = 0;
+    let consequitive_correct_triplets = 0;
+    let consequitive_incorrect_singles = 0;
 
     let all_images = [];
         for (var i = 0; i< glass_pattern_stim.length; i++) {
@@ -302,24 +302,32 @@ const test_timeline = {
                   { staircase_value = 0.1}
                 if(last_change == "up"){
                   reversals++;
-                  consequitive_correct_responses_total = 0;
+                  consequitive_correct_triplets = 0;
                 }
                 last_change = "down";
                 consecutive_correct_responses = 0;
                 if (staircase_value == 0.1) {
-                  consequitive_correct_responses_total++;
-                  console.log(["consequitive_correct_responses_total: " + consequitive_correct_responses_total]);
-                  console.log(["last_change: " + last_change]);
+                  consequitive_correct_triplets++;
+                  console.log(["consequitive correct triplets: " + consequitive_correct_triplets]);
+                  console.log(["last change: " + last_change]);
                 }
               }
             } else {
               consecutive_correct_responses = 0;
               staircase_value += staircase_change;
+              if (staircase_value < 1)
+                  { staircase_value = 1}
               if(last_change == "down"){
                 reversals++;
+                consequitive_incorrect_singles = 0;
               }
               last_change = "up";
-              consequitive_incorrect_responses_total++;
+              if (staircase_value == 1) {
+                consequitive_incorrect_singles++;
+                console.log(["consequitive incorrect singles: " + consequitive_incorrect_singles]);
+                console.log(["last change: " + last_change]);
+              }
+              
             }
             staircase_value = Math.max(Math.min(1, staircase_value), 0.1); // bound values to 0.1-1
 
@@ -334,9 +342,9 @@ const test_timeline = {
         //if_node,
       ],
       loop_function: () => {
-          if ((reversals < 10 && staircase_value > 0.1) || (reversals < 10 && staircase_value == 0.1 && consequitive_correct_responses_total < 5)) {
+          if ((reversals < 10 && staircase_value > 0.1 && staircase_value <1) || (reversals < 10 && ((staircase_value == 0.1 && consequitive_correct_triplets < 5) || (staircase_value == 1 &&  consequitive_incorrect_singles < 15) ) )) {
                 return true;
-          } else if (reversals==10 || ( reversals < 10 && staircase_value == 0.1 && consequitive_correct_responses_total == 5) ) {
+          } else if (reversals==10 || ( reversals < 10 && staircase_value == 0.1 && consequitive_correct_triplets == 5) || (reversals < 10 && staircase_value == 1 && consequitive_incorrect_singles == 15) ) {
               return false;
           }
 
