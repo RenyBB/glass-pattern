@@ -293,6 +293,7 @@ const test_timeline = {
             console.log(data.correct);
 
             if(data.correct){
+              
               consecutive_correct_responses++;
               if(consecutive_correct_responses == 3){
                 staircase_value -= staircase_change;
@@ -303,7 +304,8 @@ const test_timeline = {
                 last_change = "down";
                 consecutive_correct_responses = 0;
                 consequitive_correct_responses_total++;
-              }
+                console.log(["consequitive_correct_responses_total: " + consequitive_correct_responses_total]);
+                console.log(["last_changel: " + last_change]);
             } else {
               consecutive_correct_responses = 0;
               staircase_value += staircase_change;
@@ -314,7 +316,7 @@ const test_timeline = {
               consequitive_incorrect_responses_total++;
             }
             staircase_value = Math.max(Math.min(1, staircase_value), 0); // bound values to 0-1
-            console.log(["consequitive_correct_responses_total " + consequitive_correct_responses_total]);
+
           }
         },
          {
