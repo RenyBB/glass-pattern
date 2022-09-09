@@ -315,7 +315,7 @@ const test_timeline = {
             } else {
               consecutive_correct_responses = 0;
               staircase_value += staircase_change;
-              if (staircase_value < 1)
+              if (staircase_value > 1)
                   { staircase_value = 1}
               if(last_change == "down"){
                 reversals++;
