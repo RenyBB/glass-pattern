@@ -56,7 +56,8 @@
 
     let consequitive_correct_triplets = 0;
     let consequitive_incorrect_singles = 0;
-
+    let reversal_this_trial = []
+    
     let all_images = [];
         for (var i = 0; i< glass_pattern_stim.length; i++) {
             all_images.push(stim_path.concat(glass_pattern_stim[i].image));
@@ -298,16 +299,20 @@ const test_timeline = {
             if(data.correct){
               consequitive_incorrect_singles = 0;
               consecutive_correct_responses++;
+              reversal_this_trial = 0;
               if(consecutive_correct_responses == 3){
                 staircase_value -= staircase_change;
        
-                if (staircase_value < smallest_proportion_coherent)
-                  { staircase_value = smallest_proportion_coherent}
+                if (staircase_value < smallest_proportion_coherent) {
+                  staircase_value = smallest_proportion_coherent
+                };
                 if(last_change == "up"){
                   reversals++;
+                  reversal_this_trial = 1;
                   //consequitive_correct_triplets = 0;
-                }
+                };
                 last_change = "down";
+                
                 consecutive_correct_responses = 0;
                 if (staircase_value == smallest_proportion_coherent) {
                   consequitive_correct_triplets++;
@@ -319,10 +324,12 @@ const test_timeline = {
               consecutive_correct_responses = 0;
               consequitive_correct_triplets = 0;
               staircase_value += staircase_change;
+              reversal_this_trial = 0;
               if (staircase_value > highest_proportion_coherent)
                   { staircase_value = highest_proportion_coherent}
               if(last_change == "down"){
                 reversals++;
+                reversal_this_trial = 1;
               }
               last_change = "up";
               if (staircase_value == 1) {
