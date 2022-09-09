@@ -56,7 +56,12 @@
 
     let consequitive_correct_triplets = 0;
     let consequitive_incorrect_singles = 0;
-    let reversal_this_trial = []
+    let reversal_this_trial = [];
+    
+    const add = function (arr) {
+          return arr.reduce((a, b) => a + b, 0);
+      };
+
     
     let all_images = [];
         for (var i = 0; i< glass_pattern_stim.length; i++) {
@@ -362,13 +367,24 @@ const test_timeline = {
       }
     };
 
-
+  const performance_feedback = {
+     type: jsPsychHtmlButtonResponse,
+            stimulus: '',
+            choices: ['Continue'],
+            on_start: function (trial) {
+                let all_staircase_values = jsPsych.data.get().select('staircase_value').values 
+                let last_10_values = all_staircase_values.slice(all_staircase_values.length - 10, all_staircase_values.length);
+                let threshold = add(last_10_values)/last_10_values.length;
+                let threshold_n_dots = threshold*200*2;
+                trial.stimulus = [`Each cloud of dots consisted of 400 dots. Your threshold was ${threshold_n_dots} dots.<br>`];
+            }
+  };
    // preload stimuli
    const preload = {
             type: jsPsychPreload,
             images: [all_images],
             message: 'Please wait while the task loads. This may take a minute.',
-        };
+   };
     
     
       // Task instructions
@@ -423,6 +439,6 @@ const test_timeline = {
     
     
 
-    jsPsych.run([preload, test_timeline]); //[preload, TrainingInstructions, training_timeline, TestInstructions, self_efficacy_pretask, test_timeline, self_efficacy_posttask]
+    jsPsych.run([preload, test_timeline, performance_feedback]); //[preload, TrainingInstructions, training_timeline, TestInstructions, self_efficacy_pretask, test_timeline, self_efficacy_posttask]
   </script>
 </html>
