@@ -292,6 +292,7 @@ const test_timeline = {
           on_finish: (data) => {
             data.test = 1;
             data.correct = data.response == circle;
+            data.staircase_value = staircase_value;
             console.log(data.correct);
 
             if(data.correct){
@@ -391,7 +392,7 @@ const test_timeline = {
     const self_efficacy_pretask = {
             type: jsPsychSurveyLikert,
             questions: [{
-                prompt: '<p>Before you begin, how good do you think you will be at this task?<br><br>If you are not sure, just give you best guess.<br><br>It’s OK if you don’t think you’ll be very good at the task -  our expected ability doesn’t always match our actual ability.</p>',
+                prompt: '<p>Before you begin, how good do you think you will be at this task?<br><br>If you are not sure, just give your best guess.<br><br>It’s OK if you don’t think you’ll be very good at the task -  our expected ability doesn’t always match our actual ability.</p>',
                 labels: ["1. Not at all good", "2. Somewhat good", "3. Good", "4. Very good"]
             }],
             trial_duration: 20000,
@@ -411,6 +412,8 @@ const test_timeline = {
             button_label: "Continue",
         };
 
+    
+    
 
     jsPsych.run([preload, test_timeline]); //[preload, TrainingInstructions, training_timeline, TestInstructions, self_efficacy_pretask, test_timeline, self_efficacy_posttask]
   </script>
