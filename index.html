@@ -376,7 +376,7 @@ const test_timeline = {
                 let last_10_values = all_staircase_values.slice(all_staircase_values.length - 10, all_staircase_values.length);
                 let threshold = add(last_10_values)/last_10_values.length;
                 let threshold_n_dots = threshold*200*2;
-                trial.stimulus = [`Each cloud of dots consisted of 400 dots. Your threshold was ${threshold_n_dots} dots.<br>`];
+                trial.stimulus = [`Each cloud of dots consisted of 400 dots. Your threshold was ${Math.round(threshold_n_dots)} dots.<br>`];
             }
   };
    // preload stimuli
