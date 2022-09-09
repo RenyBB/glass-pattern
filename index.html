@@ -298,6 +298,7 @@ const test_timeline = {
                 staircase_value -= staircase_change;
                 if(last_change == "up"){
                   reversals++;
+                  consequitive_correct_responses_total = 0;
                 }
                 last_change = "down";
                 consecutive_correct_responses = 0;
@@ -313,7 +314,7 @@ const test_timeline = {
               consequitive_incorrect_responses_total++;
             }
             staircase_value = Math.max(Math.min(1, staircase_value), 0); // bound values to 0-1
-            console.log(["consequitive_correct_responses_total" + consequitive_correct_responses_total]);
+            console.log(["consequitive_correct_responses_total " + consequitive_correct_responses_total]);
           }
         },
          {
