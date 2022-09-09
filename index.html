@@ -319,7 +319,7 @@ const test_timeline = {
                   console.log(["consequitive correct triplets: " + consequitive_correct_triplets]);
                   console.log(["last change: " + last_change]);
                 }
-                data.reversal_this_trial = reversal_this_trial;
+
               }
             } else {
               consecutive_correct_responses = 0;
@@ -340,6 +340,7 @@ const test_timeline = {
               }
               
             }
+            data.reversal_this_trial = reversal_this_trial;
             staircase_value = Math.max(Math.min(highest_proportion_coherent, staircase_value), smallest_proportion_coherent); // bound values to 0.1-1
           }
         },
