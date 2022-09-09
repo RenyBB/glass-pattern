@@ -303,9 +303,11 @@ const test_timeline = {
                 }
                 last_change = "down";
                 consecutive_correct_responses = 0;
-                consequitive_correct_responses_total++;
-                console.log(["consequitive_correct_responses_total: " + consequitive_correct_responses_total]);
-                console.log(["last_changel: " + last_change]);
+                if (staircase_value == 0.1) {
+                  consequitive_correct_responses_total++;
+                  console.log(["consequitive_correct_responses_total: " + consequitive_correct_responses_total]);
+                  console.log(["last_change: " + last_change]);
+                }
               }
             } else {
               consecutive_correct_responses = 0;
