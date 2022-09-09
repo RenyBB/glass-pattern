@@ -297,8 +297,9 @@ const test_timeline = {
               consecutive_correct_responses++;
               if(consecutive_correct_responses == 3){
                 staircase_value -= staircase_change;
+       
                 if (staircase_value < 0.1)
-                  { staircase_value == 0.1}
+                  { staircase_value = 0.1}
                 if(last_change == "up"){
                   reversals++;
                   consequitive_correct_responses_total = 0;
