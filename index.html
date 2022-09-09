@@ -295,11 +295,11 @@ const test_timeline = {
             data.correct = data.response == circle;
             data.staircase_value = staircase_value;
             console.log(data.correct);
-
+            reversal_this_trial = 0;
             if(data.correct){
               consequitive_incorrect_singles = 0;
               consecutive_correct_responses++;
-              reversal_this_trial = 0;
+              
               if(consecutive_correct_responses == 3){
                 staircase_value -= staircase_change;
        
@@ -325,7 +325,6 @@ const test_timeline = {
               consecutive_correct_responses = 0;
               consequitive_correct_triplets = 0;
               staircase_value += staircase_change;
-              reversal_this_trial = 0;
               if (staircase_value > highest_proportion_coherent)
                   { staircase_value = highest_proportion_coherent}
               if(last_change == "down"){
@@ -342,6 +341,7 @@ const test_timeline = {
             }
             data.reversal_this_trial = reversal_this_trial;
             staircase_value = Math.max(Math.min(highest_proportion_coherent, staircase_value), smallest_proportion_coherent); // bound values to 0.1-1
+            reversal_this_trial = 0;
           }
         },
          {
