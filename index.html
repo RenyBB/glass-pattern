@@ -295,7 +295,7 @@ const test_timeline = {
             console.log(data.correct);
 
             if(data.correct){
-              
+              consequitive_incorrect_singles = 0;
               consecutive_correct_responses++;
               if(consecutive_correct_responses == 3){
                 staircase_value -= staircase_change;
@@ -321,7 +321,6 @@ const test_timeline = {
                   { staircase_value = highest_proportion_coherent}
               if(last_change == "down"){
                 reversals++;
-                consequitive_incorrect_singles = 0;
               }
               last_change = "up";
               if (staircase_value == 1) {
