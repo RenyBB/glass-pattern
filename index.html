@@ -304,7 +304,7 @@ const test_timeline = {
                   { staircase_value = smallest_proportion_coherent}
                 if(last_change == "up"){
                   reversals++;
-                  consequitive_correct_triplets = 0;
+                  //consequitive_correct_triplets = 0;
                 }
                 last_change = "down";
                 consecutive_correct_responses = 0;
@@ -316,6 +316,7 @@ const test_timeline = {
               }
             } else {
               consecutive_correct_responses = 0;
+              consequitive_correct_triplets = 0;
               staircase_value += staircase_change;
               if (staircase_value > highest_proportion_coherent)
                   { staircase_value = highest_proportion_coherent}
