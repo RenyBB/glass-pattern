@@ -63,13 +63,13 @@
 
     const SubjectiveRatingQs = [
         {
-           question: "How confident are you that correctly identified the non-circle in the last pair of shapes?",
+           question: "How confident are you that correctly identified which cloud of dots contained a cirlce-like pattern in the last pair of images?",
            sliderRange: [1, 4],
            anchors: ["1. Guessed", "2. Somewhat confident", "3. Confident", "4. Completely confident"],
            name: "confidence"
         },
         {
-            question: "How easy/difficult was it to identify the non-circle in the last pair of shapes?",
+            question: "How easy/difficult was it to identify which cloud of dots contained a cirlce-like pattern in the last pair of images?",
             sliderRange: [1, 4],
             anchors: ["1. Very difficult", "2. Somewhat difficult", "3. Somewhat easy", "4. Very easy"],
             name: "difficulty"
@@ -195,7 +195,7 @@ const training_timeline = {
         },
         {
           type: jsPsychHtmlKeyboardResponse,
-          stimulus: "<p>Which image was the a circle?</p><p>Press 1 for the first and 2 for the second.</p>",
+          stimulus: "<p>Which cloud of dots contained a circle-like pattern?</p><p>Press 1 for the first and 2 for the second.</p>",
           choices: ["1","2"],
           on_finish: (data) => {
             data.correct = data.response == circle;
@@ -285,7 +285,7 @@ const test_timeline = {
         },
         {
           type: jsPsychHtmlKeyboardResponse,
-          stimulus: "<p>Which image was not a circle?</p><p>Press 1 for the first and 2 for the second.</p>",
+          stimulus: "<p>Which cloud of dots contained a circle-like pattern?</p><p>Press 1 for the first and 2 for the second.</p>",
           choices: ["1","2"],
           on_finish: (data) => {
             data.test = 1;
