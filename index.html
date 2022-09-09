@@ -323,7 +323,7 @@ const test_timeline = {
               document.body.style.cursor= "auto";
           }
         },
-        if_node,
+        //if_node,
       ],
       loop_function: () => {
         return reversals < 10;
@@ -389,6 +389,6 @@ const test_timeline = {
         };
 
 
-    jsPsych.run([preload, TrainingInstructions, training_timeline, TestInstructions, self_efficacy_pretask, test_timeline, self_efficacy_posttask]);
+    jsPsych.run([preload, test_timeline]); //[preload, TrainingInstructions, training_timeline, TestInstructions, self_efficacy_pretask, test_timeline, self_efficacy_posttask]
   </script>
 </html>
